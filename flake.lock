@@ -197,16 +197,16 @@
     "speedb": {
       "flake": false,
       "locked": {
-        "lastModified": 1779881126,
-        "narHash": "sha256-35rUPilACeYsPL/EzvFEJRjTv4e+nRS5cDNqbBljIVc=",
+        "lastModified": 1782848213,
+        "narHash": "sha256-i02koaBzxAJOlKqoyBE+f2+d1uiDUFgts5OF6jBttaw=",
         "ref": "refs/heads/main",
-        "rev": "3b70101d8d677a12b18521473fbf22c842d2c26c",
-        "revCount": 12278,
+        "rev": "3804d5f3612220734f45b4b3e6f3b448dc41f1c9",
+        "revCount": 12280,
         "type": "git",
         "url": "ssh://git@github.com/redislabsdev/speedb-ent"
       },
       "original": {
-        "rev": "3b70101d8d677a12b18521473fbf22c842d2c26c",
+        "rev": "3804d5f3612220734f45b4b3e6f3b448dc41f1c9",
         "type": "git",
         "url": "ssh://git@github.com/redislabsdev/speedb-ent"
       }

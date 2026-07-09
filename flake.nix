@@ -15,6 +15,20 @@
       url = "github:mainmatter/redis-flake/rl_big2_beta";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
+
+      # Override the speedb-ent commit that redis-flake@rl_big2_beta pins.
+      # Its default (3b70101d8) predates the libspeedb SONAME rename to 8.6,
+      # so bs_speedb.so ends up needing libspeedb.so.2 while RediSearchDisk
+      # links against libspeedb.so.8.6. Loading two SpeedB libraries with
+      # different SONAMEs in the same Redis process corrupts SpeedB's global
+      # state and crashes persistence-heavy tests (hot restart, SST
+      # replication, compaction). Pin to the same speedb-ent commit that
+      # RediSearchDisk's deps/speedb-ent submodule uses so bs_speedb.so and
+      # redisearch.so share the exact same libspeedb.so.8.6.
+      inputs.speedb = {
+        url = "git+ssh://git@github.com/redislabsdev/speedb-ent?rev=3804d5f3612220734f45b4b3e6f3b448dc41f1c9";
+        flake = false;
+      };
     };
 
     rltest-src = {
