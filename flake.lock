@@ -88,18 +88,18 @@
     "redis": {
       "flake": false,
       "locked": {
-        "lastModified": 1781791371,
-        "narHash": "sha256-Fp0IVI7HkHgTm2sjeaGLo1H+wimnmT2WkhV7U9YkOoY=",
-        "ref": "rl_big2_beta",
-        "rev": "cf202764400cefa98f81676764ea1b273f124d58",
-        "revCount": 20764,
+        "lastModified": 1783496796,
+        "narHash": "sha256-v1AOdW5gzC+PEWAgGNwpOcXwrSVet4C9nXrw9M8ufBI=",
+        "ref": "refs/heads/rl_8.8",
+        "rev": "bdb3ed6665b8e78dbb5101a7eb3204c35940d2be",
+        "revCount": 20758,
         "type": "git",
-        "url": "ssh://git@github.com/redislabsdev/Redis.git"
+        "url": "ssh://git@github.com/redislabsdev/Redis"
       },
       "original": {
-        "ref": "rl_big2_beta",
+        "rev": "bdb3ed6665b8e78dbb5101a7eb3204c35940d2be",
         "type": "git",
-        "url": "ssh://git@github.com/redislabsdev/Redis.git"
+        "url": "ssh://git@github.com/redislabsdev/Redis"
       }
     },
     "redis-flake": {
@@ -197,16 +197,16 @@
     "speedb": {
       "flake": false,
       "locked": {
-        "lastModified": 1782848213,
-        "narHash": "sha256-i02koaBzxAJOlKqoyBE+f2+d1uiDUFgts5OF6jBttaw=",
+        "lastModified": 1784013121,
+        "narHash": "sha256-k2fwDrggr1Uuu4+cJuVBqJbEDWpCUH7kmHgCa2y0+fY=",
         "ref": "refs/heads/main",
-        "rev": "3804d5f3612220734f45b4b3e6f3b448dc41f1c9",
-        "revCount": 12280,
+        "rev": "8157136ba505f5bf159f4e0b2b29967f1b26e6ee",
+        "revCount": 12284,
         "type": "git",
         "url": "ssh://git@github.com/redislabsdev/speedb-ent"
       },
       "original": {
-        "rev": "3804d5f3612220734f45b4b3e6f3b448dc41f1c9",
+        "rev": "8157136ba505f5bf159f4e0b2b29967f1b26e6ee",
         "type": "git",
         "url": "ssh://git@github.com/redislabsdev/speedb-ent"
       }

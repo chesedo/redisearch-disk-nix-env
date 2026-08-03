@@ -16,6 +16,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
 
+      # Override the Redis source that redis-flake@rl_big2_beta pins (its
+      # rl_big2_beta branch). That branch lacks the async-scan module APIs
+      # (RedisModule_AsyncScanStart / _AsyncScanNextBatch /
+      # _ScanCursorCreateWithName) that RediSearch's async background indexing
+      # calls; on a server without them the API pointer resolves to the
+      # invalidFunctionWasCalled crash stub and the reindex worker segfaults.
+      # Pin to the commit that ships those APIs.
+      inputs.redis = {
+        url = "git+ssh://git@github.com/redislabsdev/Redis?rev=bdb3ed6665b8e78dbb5101a7eb3204c35940d2be";
+        flake = false;
+      };
+
       # Override the speedb-ent commit that redis-flake@rl_big2_beta pins.
       # Its default (3b70101d8) predates the libspeedb SONAME rename to 8.6,
       # so bs_speedb.so ends up needing libspeedb.so.2 while RediSearchDisk
@@ -26,7 +38,7 @@
       # RediSearchDisk's deps/speedb-ent submodule uses so bs_speedb.so and
       # redisearch.so share the exact same libspeedb.so.8.6.
       inputs.speedb = {
-        url = "git+ssh://git@github.com/redislabsdev/speedb-ent?rev=3804d5f3612220734f45b4b3e6f3b448dc41f1c9";
+        url = "git+ssh://git@github.com/redislabsdev/speedb-ent?rev=8157136ba505f5bf159f4e0b2b29967f1b26e6ee";
         flake = false;
       };
     };
@@ -339,6 +351,30 @@
           pytest-xdist
           pytest-timeout
         ]);
+
+        # lcov 1.15, matching what Ubuntu Jammy ships (apt install lcov). Used in
+        # the nightly shell so `./build.sh coverage-vecsim` mirrors what CI sees.
+        # lcov 2.x's derivation only patchShebangs tests/; 1.15 also needs
+        # bin/install.sh (uses `#!/usr/bin/env bash`, not available in nix sandbox).
+        lcov_1_15 = pkgs.lcov.overrideAttrs (old: rec {
+          version = "1.15";
+          src = pkgs.fetchFromGitHub {
+            owner = "linux-test-project";
+            repo = "lcov";
+            rev = "v${version}";
+            hash = "sha256-0/8P0M08WJLEoxSCOJvPWVoWZ9998b6AQ4QXcqc7bM8=";
+          };
+          postPatch = (old.postPatch or "") + ''
+            patchShebangs bin/
+          '';
+          # 2.x's postInstall wraps `llvm2lcov`, which doesn't exist in 1.15.
+          # Wrap only the binaries that actually ship in this version.
+          postInstall = ''
+            for f in "$out"/bin/lcov "$out"/bin/genhtml "$out"/bin/geninfo "$out"/bin/genpng "$out"/bin/gendesc; do
+              [ -x "$f" ] && wrapProgram "$f" --prefix PERL5LIB : "$PERL5LIB"
+            done
+          '';
+        });
       in
       {
         devShells = {
@@ -425,14 +461,23 @@
               # Cache for faster rebuilds
               sccache
 
-              # Rust toolchain and extensions
-              rust-bin.stable.latest.default
+              # Rust toolchain and extensions. llvm-tools-preview provides
+              # llvm-cov/llvm-profdata (matching this toolchain) for
+              # `./build.sh coverage-flow` (Rust flow-test coverage).
+              (rust-bin.stable.latest.default.override {
+                extensions = [ "llvm-tools-preview" ];
+              })
               rust-analyzer
               cargo-watch
               cargo-outdated
               cargo-nextest
               lldb
               vscode-extensions.vadimcn.vscode-lldb.adapter
+
+              # C/C++ coverage capture (./build.sh coverage-vecsim). Pairs with
+              # this shell's clang via `llvm-cov gcov` (llvm-cov from llvmPackages.llvm).
+              lcov
+              llvmPackages.llvm
             ];
           };
 
@@ -495,7 +540,7 @@
               })
               cargo-llvm-cov
               cargo-nextest
-              lcov
+              lcov_1_15  # match CI (Ubuntu Jammy ships lcov 1.15)
             ];
           };
         };
